@@ -1,0 +1,121 @@
+1.tiles적용하기
+  1)pom.xml에 라이브러리 추가
+  
+  2)템플릿파일을 만들고 각 영역을 설정
+    => 템플릿이 될 jsp를 만들고 레이아웃을 정의한다.
+    => tiles설정 파일에 등록한 영역이 실제 템플릿 파일의 어느 부분인지 jsp파일에서 등록하는 작업
+    
+  3)tiles설정파일을 만들어서 레이아웃(템플릿에 대한)을 등록하기
+    => 템플릿을 등록
+    => 뷰를 등록
+    main-tiles.xml
+    
+  4)spring-config.xml에 설정
+    => tiles를 기본으로 View를 만들 수 있도록 ViewResolver를 등록
+    1. tiles설정 파일을 읽어서 작업할 수 있도록 설정파일을 등록
+    2. tiles를 
+  
+  5)부등록하고 사용하기
+  
+2.Connection Pool
+  1)기존커넥션을 관리하는 방법
+    => 요청이 들어오면 커넥션을 매번 직접 생성
+    -1.커넥션 요청
+    -2.드라이버가 DB서버에 연결한다.
+       =>연결하는 과정에서 3way handshake와 같은 네트워크 동작이 발생(리소스를 많이씀) ==> TCP/IP(연결지향적)
+    -3.커넥션이 연결되면 계정과 계정 패스워드를 이용해서 내부적으로 인증작업을 수행한다.
+    -4.인증이 완료되면 sql을 사용할 수 있는 세션이 만들어진다.
+       => 같은 세션인 경우만 트랜잭션이 가능
+    -5.DB서버가 생성된 커넥션 정보를 리턴
+    -6.커넥션을 이용해서 sql문을 실행한다.
+    
+  2)문제점
+    -매번 커넥션을 만들때마다 네트워크 접속이 발생하므로 리소스를 많이 사용함.
+    
+  3)Connection Pool 
+    -해결하기 위해서 동시간대 평균접속자수를 고려해서 커넥션을 미리 만들어서 관리하는 방법
+    -WAS가 시작될때 미리 만들어서 대기
+                 --------------
+                 DB서버와 네트워크로 연결
+    -요청이 들어오면 Connection Pool에서 커넥션을 꺼내서 반환
+    -SQL작업이 모두 끝나면 커넥션을 종료하지 않고 Connection Pool로 다시 반환
+    -commons-dbcp2, tomcat-jdbc pool, HikariCP(spring boot2.0 부터 기본 포함)등 오픈소스를 사용한다
+    -WAS에서 제공되는 커넥션풀을 이용(강사님 유튜브 참조)
+    -커넥션풀마다 내부적으로 접근하는 방법이나 API가 다 다르므로
+     자바에서는 javax.sql.DataSource를 제공
+             ---------------------
+             커넥션을 얻는 방법을 추상화 해놓은 인터페이스
+             
+  4)HikariCP설정
+    1)HikariConfig
+      =>DB서버에 대한 정보를 설정
+      =>드라이버, url, 계정, 계정패스워드
+      =>커넥션풀에 대한 각종 설정
+    2)HikariDataSource
+      =>HikariConfig를 기반으로 만들어진 커넥션풀에서 커넥션을 관리하는 객체
+      =>기본설정이 커넥션을 10개 성공
+      
+3.DB접근기술
+  1)SQLMapper
+    -JdbcTemplate
+    -Mybatis
+    
+    -개발자가 SQL문을 작성하면 SQL의 결과를 객체로 편리하게 매핑해주는 작업을 수행
+    -JDBC의 반복되거나 복잡한 부분을 내부에서 다 처리해주고 있다.
+  2)ORM
+    -JPA
+         
+4.mybatis설정
+  =>sql문을 분리해서 xml에 정의한다. ==> 굉장히 편리하다?
+  =>동적쿼리를 위한 기능을 제공(<if>, <where>, <foreach>....)
+    ------
+    사용자의 선택에 따라 sql문 1,2,3,4,5.....를 만들어놓고 연결해야하는 상황에서...
+    조건을 주고 조회를 해야하는 상황이라면, 조건을 줬을 때 사용자에게 체크박스를 선택하게 줘야한다면
+    상황마다 다 달라진다. JdbcTemplate로 하려면 if문으로 전부 처리해줘야 하는데,
+    동적쿼리를 위한 기능을 제공하기 때문에 다르다...???
+    마이바티스는 mapper도 따로 자동으로 만들어준다.(기존에는 만들었음.)
+    
+    
+  
+  1)pom.xml에 라이브러리 추가
+    -mybatis라이브러리
+    -spring과 mybatis를 연동하는 라이브러리
+    
+  2)mybatis의 설정파일을 작성
+    -mybatis의 전체 설정정보를 담고있는 main설정파일
+    							 ----------
+    							 <!DOCTYPE configuration
+  								   PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  								   "https://mybatis.org/dtd/mybatis-3-config.dtd">
+  3)스프링설정파일에 mybatis와 관련된 라이브러리를 등록해야한다.
+    -SqlSessionFactoryBean을 등록
+      =>spring과 mybatis를 연결해주는 클래스
+      =>mybatis와 mysql의 연결을 관리
+    -SqlSessionTemplate등록
+      =>mybatis의 핵심클래스
+      =>JdbcTemplate과 같이 sql을 실행할 수 있도록 기능을 제공
+     
+  4)mapper작성하기
+    =>sql문을 정의하는 xml파일
+    
+5.spring mvc
+  1)컨트롤러의 메소드
+    =>허용된 범위에서 다양하게 매개변수나 리턴타입을 정의하고 사용할 수 있다.
+    -1.매개변수
+       -String, xxxDTO, HttpServletRequest, HttpSession
+       -Model : spring에서 사용하는 공유데이터를 저장할 수 있는 객체, 
+                컨트롤러가 요청되는 과정에서 자동으로 만들어서 메소드 호출하면서 전달함.
+                Map의 구조를 가지고있다.
+                request scope에서 저장할 수 있는 객체
+                
+    -2.리턴타입
+       -String : view정보
+       -ModelAndView : model(jsp에 공유할 데이터)과 view정보
+    
+  
+  
+  
+  
+    
+    
+    

@@ -1,0 +1,14 @@
+<<Spring Jdbc>>
+1. 라이브러리 등록
+   - spring jdbc, mysql드라이버
+
+2. 커넥션관리 객체를 생성
+   - 스프링에서 제공되는 커넥션 관리 객체를 설정파일에 등록하기
+   - DriverManager를 이용해서 Connection객체 생성하고 사용 (O)
+   - Connection Pool사용하기 위해 외부에서 제공되는 라이브러리를 이용
+   - Connection Pool사용하기 위해서 WAS에 등록하고 사용하는 방법
+                                ----------------
+                                   JNDI
+                                   
+3. DB연동기능을 제공하는 스프링의 객체를 생성
+   - JdbcTemplate (CLRUD를 위한 기능을 제공)

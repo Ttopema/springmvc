@@ -1,0 +1,232 @@
+실행방법에 따른 자바 클래스의 구분
+  -Application : main메소드를 만들어서 실행
+   TestServlet obj = new TestServlet()
+   obj.메소드()
+  -Applet : html태그로 삽입(지금은 안 쓴다.)
+  -Servlet
+  
+  
+<<서블릿>>
+  -클라이언트의 요청을 처리하기 위한 자바 기술
+  -서버에서 클라이언트의 요청을 처리하고 응답할 수 있도록 만들어진 자바 객체
+  -클라이언트가 요청을하면 서버에서 실행되면서 DB에 대한 처리, 서버의 리소스를 이용해서 만들어진 결과를
+   클라이언트에 응답한다.
+  -클라이언트가 요청하면 서버가 자동으로 요청한 서블릿을 찾아서 실행하므로 무조건 서버가 인식하는 위치에 있어야 한다.
+  															  ----------------
+  												서블릿디렉토리(표준화된 폴더 구조의 classes폴)
+  												=>서버가 서블릿을 찾는 위치
+  -서버를 구성하는 많은 클래스 내부에서 우리가 만든 서블릿 객체가 실행되도록 하기 위해서는 서버가 인식할 수 있도록 
+   규칙에 맞게 서블릿 클래스를 작성해야 한다.
+
+1.서블릿작성규칙
+  -서버가 인식할 수 있도록 규칙에 맞게 서블릿을 작성해야 한다.
+   1)서블릿이 저장될 폴더(서블릿디렉토리) - classes
+   [표준화된 폴더 구조]
+    Context
+    
+   2)서버에 의해서 호출이 될 것이므로 무조건 반드시 public클래스로 작성해야 한다.
+   3)서버가 서블릿으로 인식하고 실행해야 하므로 무조건 상속받아야 하는 클래스가 존재한다. s
+     =>서블릿클래스가 되기 위해서 무조건 서블릿 클래스를 상속받아야 한다.
+       Servlet	인터페이스
+      ---------
+      GenericAServlet 추상클래스 (서블릿의 일반적인 내용이 정의된 서블릿 클래스)
+      
+      HttpServlet	http프로토콜에 특징적인 내용이 정의된 서블릿 클래스
+      
+      MyServlet		사용자가 만든 서블릿
+      
+   4)서버가 호출할 메소드를 오버라이딩
+     -서버가 자동으로 호출할 메소드를 오버라이딩해서 내가 실행하고 싶은 명령문을 구현한다.
+     -서버가 자동으로 호출하는 메소드를 callback메소드라 한다.
+     -클라이언트가 요청하면 서버가 요청을 분석해서 서블릿 디렉토리에서 위치하는 서블릿 클래스를 찾아서 적절한 상황에
+      오버라이딩된 메소드를 자동으로 호출한다.
+      따라서 상황에 맞게 적절하게 처리하고 싶은 내용이 있다면 메소드를 오버라이딩해서 내용을 정의해야 한다.
+     -자동으로 메소드가 호출된다는 말은 객체의 lifecycle을 서버가 관리
+     								 ---------
+     					 객체가 생성되고 생성된 객체를 사용하고 객체를 메모리에서 해제하는 모든 작업
+     -오버라이딩해야 하는 메소드는 lifecycle과 관련있는 메소드
+     [오버라이딩해야 하는 메소드]
+      -init : 서블릿객체가 초기화될때 호출
+      -service : 클라이언트가 요청될때 호출되는 메소드
+      			 =>클라이언트의 요청을 처리하는 메소드로 요청을 받고 처리할 내용을 구현
+      			 ex)로그인,게시판목록보기,메일읽기,장바구니조회,상품목록조회,잔액조회,예약하기........
+   5)서블릿등록
+     -서버가 인식할 수 있도록 등록
+     -서버가 요청을 분석해서 서블릿디렉토리에서 서블릿을 찾아서 실행할 수 있도록 어떤 요청에 어떤 서블릿이 실행되어야 하는지 등록해야한다.
+     -설정파일에 등록(web.xml)
+     -실제작업은 annotation으로 설정
+     -web.xml파일은 xml형식의 파일이므로 태그로 작성하고 작성규칙이 정해져 있기 때문에 정확하게 작성해야 한다.
+     										  -------
+     										  dtd - xml안에 정의하고 사용할 엘리먼트를 정의한 명세서
+     										  (엘리먼트의 순서, 타입, 값, 하위구조....)
+     1)서블릿등록
+       -실제 어떤 패키지의 어떤 클래스를 실행해야 하는지 등록 : 무엇을????
+       <servlet>
+       		<servlet-name>서블릿명</servlet-name>
+       		<servlet-name>서블릿의 실제 클래스명과 위치(클래스명)</servlet-name>
+       </servlet>
+       ex) basic패키지에 FirstServlet을 first라는 이름의 서블릿으로 등록
+       
+       <servlet>
+       		<servlet-name>first</servlet-name>
+       		<servlet-name>basic.FristServlet(클래스명)</servlet-name>
+       </servlet>
+     2)서블릿매핑
+       -등록된 서블릿을 어떻게 요청하면 실행할 것인지 등록(어떤 url로 요청할 것인지)
+       -반드시<servlet>엘리먼트 다음에 위치해야 한다. 즉, <servlet>엘리먼트와 함께 한 쌍으로 정의해야 한다.
+       -위에서 등록한 서블릿을 어떻게 요청할 것인지를 등록하는 엘리먼트
+       <servlet-mapping>
+       		<servlet-name>위에서 정의한 서블릿의 이름</servlet-name>
+       		<url-pattern>요청할 서블릿의 path<url-pattern>
+       					 ----------------
+       					 반드시 /나 .으로 시작해야한다.
+       </servlet-mapping>
+       
+      ex)first라는 이름을 ㅗ등록된 서블릿을 /first.sds로 요청하면 실행하도록 정의
+     
+	     <servlet-mapping>
+	       		<servlet-name>first</servlet-name>
+	       		<url-pattern>first.sds<url-pattern>
+	       </servlet-mapping>
+     
+2.서블릿요청방법
+  -서블릿을 어떻게 실행해야 하는지 알 수 있어야 한다.
+  -일반 html문서 요청
+   http://서버의 ip:port/context명/폴더/정적파일명
+   
+   clientweb이라는 context의 html폴더에 formtest.html을 실행
+   http://123.254.177.73:8088/clientweb/html/formtest.html
+   
+  -서블릿을 요청하는 방식은 http의 요청방법에 따라서 get방식과 post방식으로 요청할 수 있다.
+  
+   1)서블릿의 요청
+     http://서버의 ip:port/context명/서블릿매핑명
+     							   --------
+     							   web.xml의 <url-pattern>에 등록하거나 annotation으로 등록한 path
+     서블릿을 못 찾는 경우 - 404응답코드
+     
+     basic.FirstServletdmf / first.sds로 매핑한 경우
+     http://123.254.177.73:8088/serverweb/first.sds
+     ----   -------------  ---- --------- ----------
+     프로토콜     ip         port  context   url매핑명
+     
+   2)get방식
+     =>클라이언트가 입력한 내용이 요청헤더에 저장되어서 서버로 전송되는 방식
+       주로 서버의 데이터를 가져오는 경우 사용
+       
+       1.주소표시줄에 직접 입력해서 요청하는 방식
+         =>테스트용으로 사용되거나 첫 번째 페이지에서 요청되는 경우
+       2.하이퍼링크로 클릭
+         =>텍스트나 이미지를 클릭해서 서블릿을 요청하는 경우
+         <a href="context명/서블릿요청 path">로그인</a>
+         <a href="http://123.254.177.73:8088/serverweb/first.sds">로그인</a>
+         <a href="/serverweb/first.sds">로그인</a>
+       3.<form>태그의 method속성에 get을 정의하고 submit버튼을 눌러 요청하는 경우
+         => <form>태그의 submit버튼을 누르면 action에 정의한 application이 요청되면서 <form></form> 사이에 모든
+            양식태그를 통해 클라이언트가 입력한 name과 value가 전송된다.
+            이때 method속성에 정의한 get이나 post와 같은 요청방식으로 요청된다.
+         <form action="요청해서 실행할 web application의 path" method="요청방식">
+         </from>
+  
+         life.do를 요청하고 요청방식을 get방식으로 요청하기
+        <form action="/serverweb/life.do" method="get">
+			아이디:<input type="text" name="id"><br/>
+			비밀번호:<input type="text" name="pass"><br/>
+			<input type="submit" value="로그인"/>
+		</form>
+		
+   3)post방식
+     =>form태그의 method속성에 post를 정의하고 submit버튼을 눌러 요청하는 경우
+     <form action="/serverweb/life.do" method="post">
+		아이디:<input type="text" name="id"><br/>
+		비밀번호:<input type="text" name="pass"><br/>
+		<input type="submit" value="로그인"/>
+	</form>
+	
+   4)자바스크립트로 서블릿 요청하기
+   
+[요청재지정]
+-클라이언트가 최초 요청한 서블릿을 응답하지 않고 다른 web application(html, jsp, 다른 서블릿)이 응답되도록
+ 서블릿 내부에서 재요청하는 것을 의미
+-서블릿에서 뷰를 분리하기 위해서 반드시 알아야 하는 개념
+
+
+1.데이터공유
+  -데이터공유가 가능한 scope는 page, request, session, application이 있다.
+  -모든 scope를 담당하는 객체가 존재하며 이 객체 내부에넌 데이터를 공유할 수있도록 Map구조의 저장소(모델)를 가지고 있다
+  																		 ---------
+  1)scope																	 name과 value를 한 쌍으로 저장(공유)
+    -1page(javax.servlet.jsp.PageContext)
+      --현재 jsp페이지에서 데이터공유
+   
+    -2request(javax.servlet.ServletRequest)
+      --한 번의 요청으로 실행되어 응답되는 모든 web Application이 데이터를 공유 
+    -3session(javax.servlet.ServletContext)
+    -4application(javax.servlet.ServletContext) 
+  2)데이터 공유
+    scope객체.setAttribute("공유될 데이터의 이름", 공유될 객체)
+                           ----------        --------
+                           공유될 attribute   자바에서 사용되는 모든 객체를 공유할 수 있다.
+                                            사용자정의로 만들어지는 객체의 예측이 불가능하므로 타입은Object
+  3)공유된 데이터를 꺼내기
+    -공유된 데이터의 타입은 Object이므로 실제 저장된 객체로 Casting해야한다.
+     공유한 객체타입 변수 = (공유한 객체타입) scope객체.getAttribute("공유된 데이터의 이름")
+                        -----------
+                        공유될때 타입이 java.Object로 공유되므로 꺼낼때는 무조건 캐스팅해야 한다.
+
+2.요청재지정
+  1)response객체의 sendRedirect
+  2)RequestDispathcer의 forward - 서블릿에서 주로 사용	
+  3)RequestDispathcer의 include - jsp에서 주로 사용
+  
+3.sendRediret
+  1)문법
+    ServletResponse의 sendRediret 라는 메소드를 이용해서 구현
+    response.sedRedirect("요청재지정될 web application path")
+           				  ------------------------------
+           				  client부터 다시 요청해서 들어가는 것이기 때문에 path는 context까지 지정해야 한다.
+   -최초요청했던 서블릿이 response한 후 다시 재요청하는 방법이므로 데이터를 공유할 수 없다.
+   -로그인 아이디나 패스워드를 잘못입력한 경우 로그인 페이지를 다시 보여주기 위한 방법으로 주로 사용
+   -스프링으로 구축된 시스템은 기본이 forward
+   -두 번의 요청으로 처리하므로 주소표시줄이 요청재지정으로 정의한 web application의 경로로 바뀐다.
+   
+4.forward
+  -가장 일반적으로 사용되는 방법
+  -최초 요청된 서블릿이 응답되지 않고 새로은 web application을 요청한다.
+  -최초 요청받은 서블릿이 실행된 후 요청재지정으로 정의된 application으로 제어가 넘어간다.
+  -한 번의 요청으로 모든 application이 실행되므로 데이터가 공유된다.
+  -한 번의 요청으로 모든 application이 실행되므로 주소표시줄이 최초 요청된 서블릿으로 표시된다.
+  -RequestDispatcher의 forware메소드를 호출
+  
+[문법]
+RequestDispatcher re = request.getRequestDispatcher("요청재지정할 application의 path")
+													 ----------------------------
+													 response하지 않고 최초 실행된 서블릿의 실행 중에
+													 다른 application을 요청하는 것이므로 context를
+													 정의하지 않는다.
+rd.forward(request객체, response객체)
+
+
+5.include
+  -가장 일반적으로 사용되는 방법
+  -최초 요청된 서블릿이 응답되지 않고 새로은 web application을 요청한다.
+  -최초 요청받은 서블릿이 실행된 후 요청재지정으로 정의된 application이 실행되고 다시 최초요청된 서블릿으로 되돌아가서 response
+  -한 번의 요청으로 모든 application이 실행되므로 데이터가 공유된다.
+  -한 번의 요청으로 모든 application이 실행되므로 주소표시줄이 최초 요청된 서블릿으로 표시된다.
+  -RequestDispatcher의 include메소드를 호출
+  -중간에 실행결과를 포함하는 경우 사용(jsp를 실행하고 실행결과를 가지고 되돌아온다.)
+  
+[문법]
+RequestDispatcher re = request.getRequestDispatcher("요청재지정할 application의 path")
+													 ----------------------------
+													 response하지 않고 최초 실행된 서블릿의 실행 중에
+													 다른 application을 요청하는 것이므로 context를
+													 정의하지 않는다.
+rd.include(request객체, response객체)
+
+													 
+	
+	
+	
+	
+	

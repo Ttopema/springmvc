@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript">
+	function calltest1(){
+		//get방식으로 요청하는 경우
+		location.href = "/serverweb/gugu/gugudan.html";
+		
+	}
+	//버튼이나 이미지나 다른 하이퍼링크와 같은 다른 뷰에서 선택했을 때 submit버튼을 누른 것과 동일한 효과를 주기 위한 방법
+	function calltest2(){
+		var loginform = document.getElementById("myform");
+		loginform.action = "/serverweb/life.do"; //서블릿path
+		loginform.method = "POST"; //요청방법
+		loginform.submit();
+		
+	}
+</script>
+</head>
+<body>
+	<form id="myform">
+		<input type="text" name="id">
+		<input type="button" value="자바스크립트로 서블릿호출하기1" onclick="calltest1()"/>
+		<input type="button" value="자바스크립트로 서블릿호출하기2" onclick="calltest2()"/>
+		
+	</form>
+</body>
+</html>

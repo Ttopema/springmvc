@@ -1,0 +1,4 @@
+#Tomcat publish data
+#Fri May 12 20:33:22 KST 2023
+org.eclipse.jst.jee.server\:/binary\:/Users/myeongjunpark/.m2/repository/org/springframework/spring-web/5.2.7.RELEASE/spring-web-5.2.7.RELEASE.jar=WEB-INF/lib/spring-web-5.2.7.RELEASE.jar
+org.eclipse.jst.jee.server\:/binary\:/Users/myeongjunpark/.m2/repository/org/springframework/spring-web/4.2.4.RELEASE/spring-web-4.2.4.RELEASE.jar=WEB-INF/lib/spring-web-4.2.4.RELEASE.jar
