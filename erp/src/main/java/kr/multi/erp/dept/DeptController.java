@@ -18,7 +18,7 @@ public class DeptController {
 	@RequestMapping("/dept/register")
 	public String showPage() {
 //		return "dept/dept_register";
-		return "deptlist";
+		return "dept/dept_register";
 	}
 	
 	//터진 이후 작업	
@@ -36,7 +36,7 @@ public class DeptController {
 	@RequestMapping("/dept/list.do")
 	public ModelAndView list() {
 //		ModelAndView mav = new ModelAndView("dept/deptlist_jstl");
-		ModelAndView mav = new ModelAndView("deptlist");
+		ModelAndView mav = new ModelAndView("dept/list");
 		System.out.println("리스트 ==> tiles에서 설정한 뷰");
 		//서블릿의 메소드 호출
 		List<DeptDTO> deptlist = service.select();

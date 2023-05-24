@@ -111,8 +111,122 @@
     -2.리턴타입
        -String : view정보
        -ModelAndView : model(jsp에 공유할 데이터)과 view정보
+       -ResponseEntity<UrlResource> : 응답의 데이터를 관리하는 객체
+       								  Http응답의 헤더, Http응답의 바디, Http응답의 상태정보.....
+       							      HttpEntity의 하위객체
+       								  HttpEntity는 Http의 요청과 응답을 관리하는 객체
+       								  요청헤더, 바디, 응답헤더, 바디 관리하는 객체
+       								  
+       	UrlResource는 파일객체를 다루기 위해서 스프링 내부에서 사용하는 객체
+       
+6.파일업로드
+  1단계 설정
+       -pom.xml등록
+       -spring-config에 CommonsMultipartResolver등록
+                       -------------------------
+                       id는 multipartResolver로 등록해야 한다.
+       -업로드될 폴더 생성(/WEB-INF/upload)
+       
+       
+  2단계 파일업로드
+       -실제 업로드되는 서버의 위치가 필요
+       -업로드될 원본파일명과 중복되지 않도록 식별할 수 있는 파일명 생성
+       -식별할 수 있는 파일명으로 업로드
+       
+  3단계 업로드되는 파일의 정보가 DBMS에 저장
+       -업로드될 파일정보가 저장될 테이블 생성(o)
+       -테이블의 레코드를 DTO로 정의(o)
+       -업로드되는 파일의 정보를 DTO로 만들어서 ArrayList에 저장하기(o)
+       -컨트롤러에서 BoardDTO와 List<BoardFileDTO>를 서비스로 넘기기
+                 ---------  ------------------
+                 게시판에     게시글 하나에 첨부한 파일의 정보
+                 일반적인텍스트
+        ==>서비스는 게시판등록 버튼을 누를때 호출되는 메소드이므로 1개의 메소드에 정의
+        
+       -DAO에 각각의 테이블의 데이트를 insert할 수 있도록 메소드를 2개 정의
+        ==>테이블이 다르고 실행할 SQL문이 다르면 sql문을 처리하는 메소드를 각각 만들어야 한다.
+        
+       -xml에 sql문을 추가할 것이다.
+       
+  4단계 파일다운로드
+       -게시글상세보기에서 업로드된 파일의 정보를 확인
+       -업로드된 파일을 클릭하면 클라이언트PC로 다운로드 될 수 있도록
+  1)HTML폼의 전송방식
+    -1.application/x-www-form-urlencoded
+      -html에서 폼 데이터를 서버로 전송하는 가장 기본적인 방법
+      -기존의 사용했던 방식
+      -폼에 입력한 데이터를 name=value&name=value.....이런 방법으로 전송
+      
+    -2.multipart/form-data
+      -파일업로드를 하기 위해서 텍스트(name=value....)와 바이너리데이터를 같이 전송할 수 있어야 한다.
+      -다른 형식의 폼데이터와 첨부파일의 데이터를 동시에 전송할 수 있는 방법
+      -<form>태그의 enctype속성을 추가하고 설정
+      -method는 무조건 post로 설정
+      
+  2)파일업로드
+    -뷰에 enetype속성 설정하기
+    -pom.xml파일에 라이브러리 추가
+    -spring-config에 파일업로드 기능이 처리될 수 있도록 등록
+    -dto수정
+    -컨트롤러 수정
+    -파일업로드 로직 추가
     
-  
+    
+  3)MultipartFile
+    -enctype을 multipart/form-data를 이용하는 경우 DispatcherServlet내부에서 파일업로드 기능을 처리한다.
+    -DispatcherServlet내부에서 파일업로드를 처리할 수 있는 "MultipartResolver"라는 이름으로 등록된
+     빈을 찾아서 파일업로드 기능을 수행한다. 따라서 빈의 id명이 틀리면 동작하지 않는다.
+    -파일데이터는 MultiPartFile객체를 만들어서 작업
+    -파일업로드에서 파일이 여러 개 업로드되는 경우에는
+    <input type="file">인 폼데이터가 여러 개 있는 경우
+   	MultipartFile[]로 다루거나 List<MultipartFile>의 형태로 스프링이 만들어준다.
+   	이 부분은 DTO에 어떻게 선언하느냐에 따라 달라진다.
+    
+    
+7.클라이언트에 데이터전송하기
+  1)정적리소스를 클라이언트에 전달
+   -------
+   js,css,html
+   
+  2)SSR(서버사이드랜더링)
+    -동적으로view를 작성해서 클라이언트에게 전달
+    -실행하면 DBMS에서 조회한 결과를 이용해서 HTML을 서버에서 생성해서 클라이언트로 전달
+    -JSP, 타임리프
+    
+  3)CSR(클라리언트사이드랜더링)
+    -DBMS에서 조회한 결과를 데이터만 클라이언트로 전송
+    -자바스크립트에서 전달받은 데이터를 필요한 부분에 출력될 수 있도롤 뷰를 생성
+     --------
+     DOM을 이용(DOM이 복잡하고 어렵기 떄문에 jQuery를 주로 이용할 것이다.)
+    -데이터가 JSON으로 주로 전달됨
+    -안드로이드에서도 데이터를 WAS에 요청해서 받을 수 있다.
+    -다른 서버로 데이터를 전달할 수 있다.
+    -React, Vue.js  
+    
+  4)CSR을 위해서 필요한 기술(지도?? 무조건 CSR이용) ==>현업에서 무조건 사용함
+    -JSON(주로 전달되는 데이터 형식)
+    -자바스크립트에서 JSON데이터를 접근하는 방법
+    -Ajax(서버로 데이터를 요청하기 위해 사용되는 기술)
+    -스프링에서 Ajax로 요청받아서 JSON데이터를 만들어서 response하는 방법
+    -자바스크립트(jQuery)에서response받은 JSON데이터를 DOM을 이용해서 원하는 위치에 원하느 디자인으로 출력하기
+    
+    
+  5)Ajax(Asynchronous Javascript and XML)
+    -자바스크립트로 비동기통신을 요청
+    -XMLHttpRequest객체가 비동기통신을 담당
+    
+  6)jQuery로 Ajax요청하기
+    -1.$.ajax()를 이용해서 ajax통신하기
+      -jQuery의 메소드를 호출하면서 정의하는 매개변수들은 JSON형식으로 정의
+      
+      [매개변수]
+      url : ajax로 요청할 컨트롤러의 요청 path
+      type : 요청방식(get or post)
+      data : 서버로 전송할 데이터(파라미터) - 서버로 보내서 처리할 데이터가 여러개면 json으로 정의
+      datatype : ajax결과에 대한 타입 - text, json
+      success : 서버와 통신이 성공했을 때 호출되는 함수
+      error : 서버와 통신이 실패했을 때 호출되는 함수
+    
   
   
   

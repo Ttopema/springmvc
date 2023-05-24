@@ -35,7 +35,7 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public boolean idCheck(String id) {
 		// TODO Auto-generated method stub
-		return false;
+		return dao.idCheck(id);
 	}
 
 	@Override
@@ -67,11 +67,30 @@ public class MemberServiceImpl implements MemberService {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
+	//컨트롤러 ------> 서비스 ------> DAO
+	//컨트롤러 <------ 서비스 <------ DAO
+	//and 트랜잭션에 대한 처리
 	@Override
 	public MemberDTO login(MemberDTO loginUser) {
 		// TODO Auto-generated method stub
-		return dao.login(loginUser);
+		//user가 db인증 후에 받은 결과
+		MemberDTO user = dao.login(loginUser);
+//		return dao.login(loginUser);
+		//db에서 가져온 값에서 menupath를 가공해서 뷰의 이름을 menupath에 셋팅
+		if(user != null) {
+			String menupath = user.getMenupath();
+			menupath = menupath.substring(menupath.indexOf("/") + 1, menupath.indexOf("_"));
+			user.setMenupath(menupath);//잘라낸 문자열이 뷰이름이므로 다시 menupath에 셋팅하는 작업
+		}
+		System.out.println("서비스 ======>" + user);
+		return user;
+	}
+	
+	//사원등록
+	@Override
+	public int insert(MemberDTO user) {
+		// TODO Auto-generated method stub
+		return dao.insert(user);
 	}
 
 }

@@ -8,7 +8,7 @@
 
 </head>
 <body>
-	<form name="login_frm" action="/erp/emp/login.do" method="post">
+	<form name="login_frm" action="/erp/emp/spring/login" method="post"> <!-- 기존에는 /erp/emp/login.do -->
 		<table cellpadding="0" cellspacing=5 width="815" bgcolor=#f3f3f3
 			border=0>
 			<tr>

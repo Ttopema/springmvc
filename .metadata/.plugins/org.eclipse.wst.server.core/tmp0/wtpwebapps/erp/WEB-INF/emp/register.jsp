@@ -9,7 +9,25 @@
 <meta charset="UTF-8">
 	<title>Insert title here</title>
 	<script type="text/javascript">
-		
+	//JQuery작업
+	$(document).ready(function(){
+		$("#id").on("keyup", function(){
+			$.ajax({
+				url: "/erp/emp/idcheck.do",
+				type: "get", // 오타 수정: "tyep" -> "type"
+				data: {
+					"id": $("#id").val()
+				},
+				success: function(resultdata){
+					// resultdata ==> 서버와의 통신이 성공하면 자동으로 서버에서 넘겨주는 데이터
+					// 서버에서 데이터의 형식을 어떻게 정의했느냐에 따라 달라진다.
+					$("#checkVal").text(resultdata);
+				}
+			}); // 오타 수정: ")" 추가
+		});
+	});
+
+		 
 	</script>
  </head>
 	
@@ -17,7 +35,7 @@
 	<div class="container-fluid">
 			
 			<form  class="form-horizontal"			action="/erp/emp/insert.do" 
-				method="POST" 				name="myform">
+				method="POST" 	enctype="multipart/form-data"			name="myform">
 				<fieldset>
 					<div id="legend">
 					</div>
@@ -38,6 +56,10 @@
 						<label class="control-label col-sm-2" for="orgcode">부서코드</label>
 						<div class="col-sm-3">
 							<select name="deptno" class="form-control" >
+							<c:forEach var="dept" items="${deptnamelist }"> <!-- items속성값은 컨트롤러에서 공유한 이름이랑 똑같아야함 -->
+								<option value="${dept.deptno }">${dept.deptname }</option> <!-- dept.deptname 여기서 deptname은 DTO의 필드명이랑 똑같다. -->
+							
+							</c:forEach>
 							</select>
 						</div>
 					</div>
@@ -49,7 +71,7 @@
 						<label class="control-label col-sm-2" for="orgname">성명</label>
 						<div class="col-sm-3">
 							<input type="text" id="orgname" name="name"
-								placeholder="성명" class="form-control" minlength="4" >
+								placeholder="성명" class="form-control" >
 
 						</div>
 					</div>
@@ -59,7 +81,7 @@
 						<div class="col-sm-3">
 							<input type="text" id="id" name="id"
 								placeholder="사번" class="form-control" 
-								minlength="4"  >
+								minlength="3"  >
 							
 						</div>
 						<span id="checkVal" style="color: red;"></span>

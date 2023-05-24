@@ -7,6 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 public interface MemberService {
 	List<MemberDTO> getTreeEmpList(String deptno);
 	int insert(MemberDTO user,MultipartFile file,String realpath,String filename);
+	//사원등록 - db에 이미지파일은 
+	int insert(MemberDTO user);
 	public boolean idCheck(String id);
 	List<MemberDTO> getMemberList();
 	int delete(String id);

@@ -5,6 +5,7 @@ import java.sql.Date;
 import org.springframework.web.multipart.MultipartFile;
 
 public class MemberDTO {
+	//필드명은 html에서 name속성의 이름과 같아야한다.
 	private String id;
 	private String pass;
 	private String name;
@@ -26,11 +27,12 @@ public class MemberDTO {
 	private String phoneco;
 	private String phonecell;
 	private String email;
-	private String profile_photo;
+	private String profile_photo; //storeFilename
+	
 	private String deptname; //로그인 사용자의 부서정보
 	private String menupath; //로그인 사용자의 메뉴페이지정보
 	private String job_category;//로그인 사용자의 job분류정보
-	//MultipartFile userImage;
+	MultipartFile userImage;
 
 	public MemberDTO() {
 		System.out.println("기본생성자");
@@ -316,7 +318,17 @@ public class MemberDTO {
 	}
 
 	
+	
 	//생성자, setter, getter, toString 추가
+	public MultipartFile getUserImage() {
+		return userImage;
+	}
+
+
+	public void setUserImage(MultipartFile userImage) {
+		this.userImage = userImage;
+	}
+
 	
 
 }

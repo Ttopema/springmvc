@@ -43,9 +43,11 @@
 					
 					
 				
-				
-							<li><a href="/erp/emp/logout.do"><span class="glyphicon glyphicon-log-out"></span>
+							<!-- 기존에는 /erp/emp/logout.do -->
+							<li><a href="/erp/emp/spring/logout"><span class="glyphicon glyphicon-log-out"></span>
 									Logout</a></li>
+							<li><a href="/erp/emp/mypage"><span class="glyphicon glyphicon-log-out"></span>
+									마이페이지</a></li>		
 						</ul>
 						
 						<span  class="navbar-form pull-right" >	
